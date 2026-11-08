@@ -42,7 +42,8 @@
             <p class="text-sm text-emerald-300/80 line-clamp-2">${g.summary}</p>
           </div>
         `).join('');
-      });
+      })
+      .catch(err => console.error('Error loading JSON:', err));
 
     function loadGrammar(filePath) {
       fetch(filePath)
