@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>日語文法實戰學習筆記庫</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+</head>
+<body class="bg-emerald-950 text-emerald-50 min-h-screen font-sans">
+  <header class="border-b border-emerald-800 bg-emerald-950/80 backdrop-blur sticky top-0 z-50">
+    <div class="max-w-6xl mx-auto px-4 py-4 flex justify-between items-center">
+      <h1 class="text-xl font-bold text-emerald-400">🎌 日語文法實戰學習筆記庫</h1>
+      <span class="text-xs bg-emerald-900 text-emerald-200 px-3 py-1 rounded-full border border-emerald-700">AGENTS.md Driven</span>
+    </div>
+  </header>
+
+  <main class="max-w-6xl mx-auto px-4 py-8">
+    <h2 class="text-2xl font-bold mb-6 text-emerald-100">最新重點文法</h2>
+    <div id="grammar-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
+
+    <div id="modal" class="fixed inset-0 bg-black/75 flex items-center justify-center p-4 hidden z-50">
+      <div class="bg-emerald-900 border border-emerald-700 rounded-xl max-w-3xl w-full max-h-[85vh] overflow-y-auto p-6 relative shadow-2xl">
+        <button onclick="closeModal()" class="absolute top-4 right-4 text-emerald-400 hover:text-white text-xl font-bold">✕</button>
+        <div id="modal-content" class="prose prose-invert max-w-none text-emerald-100"></div>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    fetch('data/grammar.json')
+      .then(res => res.json())
+      .then(items => {
+        const grid = document.getElementById('grammar-grid');
+        grid.innerHTML = items.map(g => `
+          <div onclick="loadGrammar('${g.file}')" class="bg-emerald-900/80 border border-emerald-700/60 rounded-xl p-5 hover:border-emerald-400/80 cursor-pointer transition shadow-lg">
+            <div class="flex justify-between items-center mb-3">
+              <span class="text-xs bg-emerald-800 text-emerald-300 px-2.5 py-0.5 rounded border border-emerald-600">${g.level}</span>
+              <span class="text-xs text-emerald-400">${g.date}</span>
+            </div>
+            <h3 class="text-lg font-bold text-emerald-100 mb-2 hover:text-emerald-300">${g.title}</h3>
+            <p class="text-sm text-emerald-300/80 line-clamp-2">${g.summary}</p>
+          </div>
+        `).join('');
+      });
+
+    function loadGrammar(filePath) {
+      fetch(filePath)
+        .then(res => res.text())
+        .then(text => {
+          document.getElementById('modal-content').innerHTML = marked.parse(text);
+          document.getElementById('modal').classList.remove('hidden');
+        });
+    }
+
+    function closeModal() {
+      document.getElementById('modal').classList.add('hidden');
+    }
+  </script>
+</body>
+</html>
